@@ -51,11 +51,20 @@ namespace MyWebServer.Server
             var bufferLength = 1024;
             var buffer = new byte[bufferLength];
 
+            var totalBytes = 0;
+
             var requestBuilder = new StringBuilder();
 
             while (networkStream.DataAvailable)
             {
                 var bytesRead = await networkStream.ReadAsync(buffer, 0, bufferLength);
+
+                totalBytes += bytesRead;
+
+                if (totalBytes > 10 * 1024 )
+                {
+                    throw new InvalidOperationException("Request is too large.");
+                }
 
                 requestBuilder.Append(Encoding.UTF8.GetString(buffer, 0, bytesRead));
             }
@@ -68,7 +77,10 @@ namespace MyWebServer.Server
             var content = "Здрасти от Светльо!";
             var contentLenght = Encoding.UTF8.GetByteCount(content);
 
-            var response = $@"HTTP/1.1 200 OK
+            var response = $@"
+HTTP/1.1 200 OK
+Server: My Web Server
+Date: {DateTime.UtcNow:r}
 Content-Length:{contentLenght}
 Content-Type: text/plain; charset=UTF-8
 
