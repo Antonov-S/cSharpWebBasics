@@ -2,17 +2,16 @@
 {
     using System.Threading.Tasks;
     using MyWebServer.Server;
+    using MyWebServer.Server.Results;
 
     public class StartUp
     {
         public static async Task Main()
-        {
-            // http://localhost:9090
+            => await new HttpServer(routes => routes
+                .MapGet("/", new TextResponse("Hello from Svetlio!"))
+                .MapGet("/Cats", new TextResponse("<h1>Hello from the cats!</h1>", "text/html"))
+                .MapGet("/Dogs", new TextResponse("<h1>Hello from the dogs!</h1>", "text/html")))
+                .Start();
 
-            var server = new HttpServer("127.0.0.1", 9090);
-
-            await server.Start();
-            
-        }
     }
 }

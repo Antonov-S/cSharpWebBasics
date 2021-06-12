@@ -1,24 +1,35 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using MyWebServer.Server.Http;
-
-namespace MyWebServer.Server
+﻿namespace MyWebServer.Server
 {
+    using System;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+    using System.Threading.Tasks;
+    using MyWebServer.Server.Http;
+    using MyWebServer.Server.Routing;
+
     public class HttpServer
     {
         private readonly IPAddress iPAddress;
         private readonly int port;
         private readonly TcpListener listener;
 
-        public HttpServer(string ipAddress, int port)
+        public HttpServer(string ipAddress, int port, Action<IRoutingTable> routingTable)
         {
             this.iPAddress = IPAddress.Parse(ipAddress);
             this.port = port;
 
             listener = new TcpListener(this.iPAddress, port);
+        }
+
+        public HttpServer(int port, Action<IRoutingTable> routingTable) 
+            : this("127.0.0.1", port, routingTable)
+        {
+        }
+
+        public HttpServer(Action<IRoutingTable> routingTable)
+            : this(5000, routingTable)
+        {
         }
 
         public async Task Start()
